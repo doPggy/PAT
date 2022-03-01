@@ -4,30 +4,28 @@
 
 using namespace std;
 
-const int MAXV = 510;
-const int INF  = 0x3fffffff;
-int G[MAXV][MAXV] = {0};
-int d[MAXV] = {0};
-int cost[MAXV][MAXV] = {0}; // 记录开销边权
-int c[MAXV] = {0}; //起点到某个点 v 最小开销
-int pre[MAXV] = {0}; //用于存路径
-bool vis[MAXV] = {false};
-
-
-int n, m, s, ed;
+const int MAXV          = 510;
+const int INF           = 0x3fffffff;
+int G[MAXV][MAXV]       = {0};
+int d[MAXV]             = {0};
+int pre[MAXV]           = {0};
+bool vis[MAXV]          = { false };
+int cost[MAXV][MAXV]    = {0}; // 第二尺标 ，花费
+int c[MAXV]             = {0}; // 起点到某点的花费
+int n, m, st, ed; // 点数，边数，起始点，终点
 
 void dijkstra(int start)
 {
     fill(d, d + MAXV, INF);
-    fill(c, c + MAXV, INF); //!
-    for(int i = 0; i < n; i++) pre[i] = i; // pre 初始化
-    d[start] = 0;
-    c[start] = 0; // 自身花费为 0
-    // n 次循环
+    fill(c, c + MAXV, INF);
+    d[start]   = 0;
+    pre[start] = start;
+    c[start]   = 0;
     for(int i = 0; i < n; i++)
     {
         int min   = INF;
         int chose = -1;
+        // 找最小的 d[]
         for(int j = 0; j < n; j++)
         {
             if(!vis[j] && d[j] < min)
@@ -40,47 +38,48 @@ void dijkstra(int start)
         vis[chose] = true;
         for(int v = 0; v < n; v++)
         {
-            // 没访问过的点
             if(!vis[v] && G[chose][v])
             {
-                // 更优的要更新
-                if(G[chose][v] + d[chose] < d[v])
+                if(d[chose] + G[chose][v] < d[v])
                 {
-                    d[v]   = G[chose][v] + d[chose];
+                    d[v]   = d[chose] + G[chose][v];
                     c[v]   = c[chose] + cost[chose][v];
-                    pre[v] = chose; // v 前驱是 u
+                    pre[v] = chose;
                 }
-                else if(G[chose][v] + d[chose] == d[v])
+                else if(d[chose] + G[chose][v] == d[v])
                 {
-                    // d[v]   = G[chose][v] + d[chose];
-                    if(c[chose] + cost[chose][v] < c[v])
+                    // 如果有更小的花费
+                    if(c[v] > c[chose] + cost[chose][v])
                     {
                         c[v]   = c[chose] + cost[chose][v];
-                        pre[v] = chose; // v 前驱是 u
+                        pre[v] = chose;
                     }
                 }
             }
+
         }
     }
 }
 
-void DFS(int start, int v)
+// 最开始 v 是终点 
+void DFS(int v)
 {
-    if(start == v)
+    if(st == v)
     {
         printf("%d ", v);
         return;
     }
-    DFS(start, pre[v]);
+    DFS(pre[v]);//前驱
     printf("%d ", v);
-    return;
 }
+
 
 int main()
 {
-    scanf("%d%d%d%d", &n, &m, &s, &ed);
+    scanf("%d%d%d%d", &n, &m, &st, &ed);
+    for(int i = 0; i < n; i++) pre[i] = i; // 初始化
     int u, v;
-    // 注意是否为无向图
+    // 边权和花费
     for(int i = 0; i < m; i++)
     {
         scanf("%d%d", &u, &v);
@@ -88,8 +87,10 @@ int main()
         G[v][u]    = G[u][v];
         cost[v][u] = cost[u][v];
     }
-    dijkstra(s);
-    DFS(s, ed);
+
+    dijkstra(st);
+    DFS(ed);
     printf("%d %d\n", d[ed], c[ed]);
-    return 0;
+
+
 }
