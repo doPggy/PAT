@@ -21,6 +21,7 @@ void insert(node * &root, int data)
     }
     // if(data == root->data) //! 本题中是会给出相等的节点，不能加这个
     //     return;
+    //! data<= 不行
     if(data < root->data)
         insert(root->left, data);
     else

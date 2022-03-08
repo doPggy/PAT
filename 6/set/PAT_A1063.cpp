@@ -20,7 +20,7 @@ void cmp(int st1, int st2)
         else total++;// 并集元素增加，因为total 初始是 st2 的个数，若 st1 中的元素 st2 没有，那要增加
     }
 
-    printf(".1f%%\n", same * 100.0 / total);//!
+    printf("%.1f%%\n", same * 100.0 / total);//!
 }
 
 int main()
